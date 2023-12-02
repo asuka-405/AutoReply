@@ -1,6 +1,14 @@
 import { google } from "googleapis"
 import getOauth2Client from "./oauth.js"
 
+/////////////////////////////// MAIN FUNCTION //////////////////////////
+// reply to unread mails for each token
+// tokens: array of tokens
+// for each token set up a gmail client
+// check for unread mails
+// for each unread mail
+// send reply
+// mark mail as replied
 export default function replyUnreadMails(tokens) {
   tokens.forEach(async (token) => {
     const auth = await getOauth2Client(token)
@@ -14,6 +22,7 @@ export default function replyUnreadMails(tokens) {
   })
 }
 
+/////////////////////////////// UTILITY FUNCTIONS //////////////////////////
 export async function moveMailToRepliedLabel(gmail, id) {
   await gmail.users.messages.modify({
     userId: "me",
@@ -56,8 +65,14 @@ async function sendReply(gmail, id) {
     },
   })
 }
-
+// get reply text from original message
+// originalMessage: message object
+// extract from, to, subject from original message
+// construct reply text
+// return reply text
 async function getReplyText(originalMessage) {
+  if (!originalMessage.payload) return
+  // extract from, to, subject from original message
   const fromHeader = originalMessage.payload.headers.find(
     (header) => header.name === "From"
   )
@@ -76,6 +91,7 @@ async function getReplyText(originalMessage) {
   const contentType = "text/html; charset=utf-8"
   if (!from || !to || !subject) return
 
+  // construct reply text
   const raw = [
     `From: ${from}`,
     `To: ${to}`,

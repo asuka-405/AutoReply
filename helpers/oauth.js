@@ -8,18 +8,18 @@ dotenv.config()
 const SCOPES = JSON.parse(
   fs.readFileSync(path.join(process.cwd(), "helpers", "scopes.json"), "utf8")
 )
-
 const oauth2Client = new google.auth.OAuth2(
   process.env.GC_OAUTH_CID,
   process.env.GC_OAUTH_CS,
   `${process.env.XPOSED_URL}/success`
 )
+// auth url to get user consent
 const authURL = oauth2Client.generateAuthUrl({
   scope: SCOPES,
   include_granted_scopes: true,
   access_type: "offline",
 })
-
+// utility function to get oauth2 client from token
 export default async function getOauth2Client(token) {
   await oauth2Client.setCredentials(token)
   return oauth2Client
